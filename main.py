@@ -1,8 +1,10 @@
 from flask import Flask, request
+from flask_cors import CORS
 from markupsafe import escape
 from ConfigFileManager import ConfigFileManager
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route("/bluetooth/", methods=["GET", "POST"])
 def hello():
@@ -12,8 +14,9 @@ def hello():
         capability = request.args.get("capability", "KeyboardOnly")
         config_file_manager.set_config_value("Bluetooth", "capability", capability)
 
-
-        return("Config saved.")
+        return {
+            "capability": config_file_manager.capability
+        }
     else:
         config_file_manager = ConfigFileManager()
 
