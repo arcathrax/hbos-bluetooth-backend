@@ -15,11 +15,19 @@ def hello():
         config_file_manager.set_config_value("Bluetooth", "capability", capability)
 
         return {
-            "capability": config_file_manager.capability
+            "capability": config_file_manager.capability,
+            "discoverable": config_file_manager.discoverable,
+            "discoverableTimeout": config_file_manager.discoverable_timeout,
+            "pairable": config_file_manager.pairable,
+            "pairableTimeout": config_file_manager.pairable_timeout,
         }
     else:
         config_file_manager = ConfigFileManager()
 
         return {
-            "capability": config_file_manager.capability
+            "capability": config_file_manager.capability,
+            "discoverable": config_file_manager.discoverable,
+            "discoverableTimeout": config_file_manager.discoverable_timeout,
+            "pairable": config_file_manager.pairable,
+            "pairableTimeout": config_file_manager.pairable_timeout,
         }
