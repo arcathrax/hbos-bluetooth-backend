@@ -47,4 +47,20 @@ class ConfigFileManager:
         self.config = configparser.ConfigParser()
         self.config.read(self.config_file)
         self.capability = self.config.get("Bluetooth", "capability", fallback="KeyboardDisplay")
-        self.logger.info(f"Bluetooth capability: {self.capability}")
+
+    def set_config_value(self, section, key, value):
+        try:
+            if not self.config.has_section(section):
+                self.config.add_section(section)
+
+            self.config.set(section, key, value)
+
+            # Save changes to file
+            with open(self.config_file, 'w') as configfile:
+                self.config.write(configfile)
+
+            self.logger.info(f"Set {section}.{key} = {value}")
+
+        except Exception as e:
+            self.logger.error(f"Error setting config value: {e}")
+            self.logger.info(f"Bluetooth capability: {self.capability}")
