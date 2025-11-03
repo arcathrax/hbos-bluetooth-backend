@@ -65,3 +65,37 @@ def list_devices():
                     "trusted": bool(device.get("Trusted", False)),
                 })
     return jsonify(devices)
+
+
+@app.route("/bluetooth/unpair", methods=["POST"])
+def unpair_device():
+    """
+    Unpair a Bluetooth device by its address.
+    Expects a POST request with query parameter: ?address=XX:XX:XX:XX:XX:XX
+    """
+    address = request.args.get("address")
+    if not address:
+        return jsonify({"error": "Missing 'address' query parameter"}), 400
+
+    address = address.upper()
+    bus = dbus.SystemBus()
+    manager = dbus.Interface(bus.get_object("org.bluez", "/"),
+                             "org.freedesktop.DBus.ObjectManager")
+    objects = manager.GetManagedObjects()
+
+    # Find the device object path and its adapter
+    for path, interfaces in objects.items():
+        if "org.bluez.Device1" in interfaces:
+            device = interfaces["org.bluez.Device1"]
+            if device.get("Address", "").upper() == address:
+                # Find the adapter this device belongs to
+                adapter_path = "/".join(path.split("/")[:-1])
+                adapter_obj = dbus.Interface(bus.get_object("org.bluez", adapter_path),
+                                             "org.bluez.Adapter1")
+                try:
+                    adapter_obj.RemoveDevice(path)
+                    return jsonify({"status": "unpaired", "address": address})
+                except dbus.exceptions.DBusException as e:
+                    return jsonify({"error": str(e)}), 500
+
+    return jsonify({"error": "Device not found"}), 404
