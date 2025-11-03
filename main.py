@@ -1,6 +1,7 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 from ConfigFileManager import ConfigFileManager
+import dbus
 
 app = Flask(__name__)
 CORS(app)
@@ -45,3 +46,22 @@ def bluetooth():
         "pairableTimeout": config_file_manager.pairable_timeout,
     }
 
+@app.route("/bluetooth/paired_devices")
+def list_devices():
+    bus = dbus.SystemBus()
+    manager = dbus.Interface(bus.get_object("org.bluez", "/"),
+                             "org.freedesktop.DBus.ObjectManager")
+    objects = manager.GetManagedObjects()
+    devices = []
+
+    for path, interfaces in objects.items():
+        if "org.bluez.Device1" in interfaces:
+            device = interfaces["org.bluez.Device1"]
+            if device.get("Paired", False):
+                devices.append({
+                    "name": str(device.get("Name", "Unknown")),
+                    "address": str(device.get("Address")),
+                    "connected": bool(device.get("Connected", False)),
+                    "trusted": bool(device.get("Trusted", False)),
+                })
+    return jsonify(devices)
