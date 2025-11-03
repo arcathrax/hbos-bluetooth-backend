@@ -5,7 +5,7 @@ from ConfigFileManager import ConfigFileManager
 app = Flask(__name__)
 CORS(app)
 
-@app.route("/bluetooth/", methods=["GET", "POST"])
+@app.route("/bluetooth/settings/", methods=["GET", "POST"])
 def bluetooth():
     config_file_manager = ConfigFileManager()
 
