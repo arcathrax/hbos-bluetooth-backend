@@ -23,6 +23,9 @@ def bluetooth():
         for key in valid_keys:
             if key in request.args:
                 value = request.args.get(key)
+                # If it's a timeout key and the value is an empty string, treat it as "0"
+                if key in ["discoverable_timeout", "pairable_timeout"] and value == "":
+                    value = "0"
                 config_file_manager.set_config_value("Bluetooth", key, value)
 
         return {
