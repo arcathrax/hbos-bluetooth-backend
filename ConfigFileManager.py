@@ -1,6 +1,7 @@
 import logging
 import sys
 import os
+import time
 from pathlib import Path
 import configparser
 
@@ -78,5 +79,6 @@ class ConfigFileManager:
             self.logger.error(f"Error setting config value: {e}")
             self.logger.info(f"capability: {self.capability}")
             self.logger.info(f"discoverable: {self.discoverable}")
+            self.logger.info(f"discoverable_timeout: {self.discoverable_timeout}")
             self.logger.info(f"pairable: {self.pairable}")
             self.logger.info(f"pairable_timeout: {self.pairable_timeout}")
